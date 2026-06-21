@@ -4,7 +4,7 @@ from pygame.font import Font
 import pygame.image
 from pygame.surface import Surface
 
-from code.const import W_WIDTH, C_PURPLE, M_OPTION, C_WHITE # importando constantes
+from code.const import W_WIDTH, C_PURPLE, M_OPTION, C_WHITE, C_GOLD# importando constantes
 
 
 class Menu:
@@ -14,24 +14,42 @@ class Menu:
         self.rect = self.surf.get_rect(left=0, top=0)
 
     def run(self, ):
+        m_option = 0
         pygame.mixer.music.load('./asset/menubg.ogg') #carrega a musica
         pygame.mixer.music.play(-1) #musica toca em loop
         while True:
+            #desenhando as imagens de texto
             self.window.blit(source=self.surf, dest=self.rect)
             self.menu_tx(80,"Crystal",C_PURPLE, ((W_WIDTH/2),70))
             self.menu_tx(80, "Run", C_PURPLE, ((W_WIDTH / 2), 150))
 
             for i in range(len(M_OPTION)):
-                self.menu_tx(20, M_OPTION[i], C_WHITE, ((W_WIDTH / 2), 230+30*i))
-
-
-            pygame.display.flip()
+                if i == m_option:
+                    self.menu_tx(20, M_OPTION[i], C_GOLD, ((W_WIDTH / 2), 230 + 30 * i))
+                else:
+                    self.menu_tx(20, M_OPTION[i], C_WHITE, ((W_WIDTH / 2), 230+30*i))
 
             # Checagem de todos os eventos
             for event in pygame.event.get():
-                 if event.type == pygame.QUIT:
-                   pygame.quit() # Fecha janela
-                   quit() # Finaliza pygame
+                if event.type == pygame.QUIT:
+                    pygame.quit() # Fecha janela
+                    quit() # Finaliza pygame
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_DOWN: #usuario clica na seta para baixo
+                        if m_option < len(M_OPTION) -1:
+                            m_option += 1
+                        else: m_option = 0
+                    if event.key == pygame.K_UP: #usuario clica na seta para cima
+                        if m_option > 0:
+                            m_option -= 1
+                        else: m_option = len(M_OPTION) - 1
+                    if event.key == pygame.K_RETURN: #usuario clica no enter
+                        return M_OPTION[m_option] #retorna a opcao selecionada
+
+
+
+
+            pygame.display.flip()
 
     def menu_tx(self, tx_size: int, tx: str, tx_color: tuple, tx_center_pos: tuple):
         tx_font: Font = pygame.font.Font("./asset/neonix.ttf", tx_size)
